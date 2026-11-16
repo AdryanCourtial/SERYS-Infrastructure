@@ -1,0 +1,16 @@
+services:
+  serys-backend:
+    container_name: serys-backend
+    image: ghcr.io/adryancourtial/serys-backend:latest
+    ports:
+      - "5555:5555"
+    environment:
+      - PORT=5555
+
+  serys-frontend:
+    container_name: serys-frontend
+    image: ghcr.io/adryancourtial/serys-frontend:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
