@@ -1,0 +1,17 @@
+- name: Installer Git
+  ansible.builtin.apt:
+    name: git
+    state: present
+
+- name: Recuperer le depot SERYS-Infrastructure
+  ansible.builtin.git:
+    repo: "https://github.com/adryancourtial/SERYS-Infrastructure.git"
+    dest: /opt/serys/infra
+    version: main
+    update: true
+    force: false
+  register: infra_git
+
+- name: Afficher la revision deployee
+  ansible.builtin.debug:
+    msg: "Infrastructure Git : {{ infra_git.after }}"

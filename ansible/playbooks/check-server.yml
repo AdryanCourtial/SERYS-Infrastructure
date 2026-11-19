@@ -1,0 +1,18 @@
+- name: Verifier mon serveur Debian
+  hosts: production
+  gather_facts: true
+
+  tasks:
+    - name: Afficher la version du systeme
+      ansible.builtin.debug:
+        msg: "OS : {{ ansible_distribution }} {{ ansible_distribution_version }}"
+
+    - name: Verifier Docker
+      ansible.builtin.command: docker --version
+      register: docker_check
+      changed_when: false
+      failed_when: false
+
+    - name: Afficher le resultat Docker
+      ansible.builtin.debug:
+        msg: "{{ docker_check.stdout | default('Docker non installe', true) }}"

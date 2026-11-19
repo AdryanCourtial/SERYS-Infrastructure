@@ -1,0 +1,77 @@
+- name: Verifier que le serveur est Debian 13
+  ansible.builtin.assert:
+    that:
+      - ansible_distribution == "Debian"
+      - ansible_distribution_major_version == "13"
+    fail_msg: "Ce role est prevu pour Debian 13."
+
+- name: Verifier la presence de Docker
+  ansible.builtin.command: dpkg-query -W -f=${Status} docker-ce
+  register: docker_existing
+  changed_when: false
+  failed_when: false
+
+- name: Installer les dependances APT
+  ansible.builtin.apt:
+    name:
+      - ca-certificates
+      - python3-debian
+      - python3-requests
+    state: present
+    update_cache: true
+
+- name: Ajouter le depot officiel Docker
+  ansible.builtin.deb822_repository:
+    name: docker
+    types:
+      - deb
+    uris:
+      - https://download.docker.com/linux/debian
+    suites:
+      - trixie
+    components:
+      - stable
+    architectures:
+      - "{{ ansible_facts['architecture'] | replace('x86_64', 'amd64') | replace('aarch64', 'arm64') }}"
+    signed_by: https://download.docker.com/linux/debian/gpg
+    state: present
+  register: docker_repo
+
+- name: Actualiser le cache APT apres ajout du depot Docker
+  ansible.builtin.apt:
+    update_cache: true
+  when: docker_repo.changed
+
+- name: Installer Docker Engine et les plugins
+  ansible.builtin.apt:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Activer et demarrer Docker
+  ansible.builtin.systemd_service:
+    name: docker
+    enabled: true
+    state: started
+
+- name: Verifier Docker Engine
+  ansible.builtin.command: docker --version
+  register: docker_version
+  changed_when: false
+
+- name: Verifier Docker Compose
+  ansible.builtin.command: docker compose version
+  register: compose_version
+  changed_when: false
+
+- name: Afficher les versions installees
+  ansible.builtin.debug:
+    msg:
+      - "{{ docker_version.stdout }}"
+      - "{{ compose_version.stdout }}"

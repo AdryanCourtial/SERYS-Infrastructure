@@ -1,0 +1,7 @@
+- name: Deployer l'infrastructure SERYS
+  hosts: production
+  become: true
+  gather_facts: true
+
+  roles:
+    - role: ../roles/serys_deploy

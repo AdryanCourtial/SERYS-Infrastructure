@@ -1,0 +1,58 @@
+
+services:
+  serys-backend:
+    image: ghcr.io/adryancourtial/serys-backend:${BACKEND_TAG:-latest}
+    restart: unless-stopped
+    env_file:
+      - ./secrets/.env.backend
+    ports:
+      - "127.0.0.1:${BACKEND_PORT:-5555}:5555"
+    environment:
+      PORT: "5555"
+    depends_on:
+      database_sql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  serys-frontend:
+    image: ghcr.io/adryancourtial/serys-frontend:${FRONTEND_TAG:-latest}
+    restart: unless-stopped
+    env_file:
+      - ./secrets/.env.frontend
+    ports:
+      - "127.0.0.1:${FRONTEND_PORT:-3000}:3000"
+    environment:
+      PORT: "3000"
+    depends_on:
+      - serys-backend
+
+  database_sql:
+    image: mariadb:11.4
+    restart: unless-stopped
+    env_file:
+      - ./secrets/.env
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 40s
+
+  redis:
+    image: redis:7.4-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  mysql_data:
+  redis_data:

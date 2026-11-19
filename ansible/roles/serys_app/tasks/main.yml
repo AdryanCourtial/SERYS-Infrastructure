@@ -1,0 +1,40 @@
+---
+- name: Creer le groupe SERYS
+  ansible.builtin.group:
+    name: serys
+    system: true
+    state: present
+
+- name: Creer l'utilisateur systeme SERYS
+  ansible.builtin.user:
+    name: serys
+    group: serys
+    system: true
+    shell: /usr/sbin/nologin
+    create_home: false
+    password_lock: true
+    state: present
+
+- name: Creer le repertoire applicatif
+  ansible.builtin.file:
+    path: /opt/serys
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Creer le repertoire des donnees
+  ansible.builtin.file:
+    path: /var/lib/serys
+    state: directory
+    owner: serys
+    group: serys
+    mode: '0750'
+
+- name: Creer le repertoire de configuration
+  ansible.builtin.file:
+    path: /etc/serys
+    state: directory
+    owner: root
+    group: root
+    mode: '0750'

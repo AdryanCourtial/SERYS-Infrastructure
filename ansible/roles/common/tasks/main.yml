@@ -1,0 +1,18 @@
+#SPDX-License-Identifier: MIT-0
+---
+# tasks file for roles/common
+- name: Mettre à jour le cache APT
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Installer les outils système
+  ansible.builtin.apt:
+    name:
+      - curl
+      - git
+      - ca-certificates
+      - gnupg
+      - unzip
+      - htop
+    state: present

@@ -1,16 +1,29 @@
-services:
-  serys-backend:
-    container_name: serys-backend
-    image: ghcr.io/adryancourtial/serys-backend:latest
-    ports:
-      - "5555:5555"
-    environment:
-      - PORT=5555
 
-  serys-frontend:
-    container_name: serys-frontend
-    image: ghcr.io/adryancourtial/serys-frontend:latest
-    ports:
-      - "3000:3000"
+services:
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
     environment:
-      - PORT=3000
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: serys
+      MYSQL_USER: serys
+      MYSQL_PASSWORD: root
+    ports:
+      - "127.0.0.1:3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  redis:
+    image: redis:7.4-alpine
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:6379:6379"
+
+  mailhog:
+  image: mailhog/mailhog:v1.0.1
+  ports:
+    - "1025:1025"
+    - "8025:8025"
+
+volumes:
+  mysql_data:

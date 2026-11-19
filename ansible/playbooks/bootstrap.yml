@@ -1,0 +1,44 @@
+- name: Bootstrap du serveur Debian 13
+  hosts: production
+  remote_user: root
+  become: false
+  gather_facts: false
+
+  vars:
+    automation_user: ansible
+
+  tasks:
+    - name: Installer sudo et Python
+      ansible.builtin.raw: apt-get update && apt-get install -y sudo python3
+      changed_when: false
+
+    - name: Creer le groupe de configuration
+      ansible.builtin.group:
+        name: server-admins
+        state: present
+
+    - name: Creer l'utilisateur Ansible
+      ansible.builtin.user:
+        name: "{{ automation_user }}"
+        shell: /bin/bash
+        create_home: true
+        groups: server-admins
+        append: true
+        password_lock: true
+        state: present
+
+    - name: Installer la cle SSH publique
+      ansible.posix.authorized_key:
+        user: "{{ automation_user }}"
+        key: "{{ lookup('file', lookup('env', 'HOME') + '/.ssh/id_ed25519_ansible.pub') }}"
+        state: present
+        manage_dir: true
+
+    - name: Autoriser le groupe a utiliser sudo
+      ansible.builtin.copy:
+        dest: /etc/sudoers.d/server-admins
+        content: "%server-admins ALL=(ALL:ALL) NOPASSWD: ALL\n"
+        owner: root
+        group: root
+        mode: '0440'
+        validate: /usr/sbin/visudo -cf %s
