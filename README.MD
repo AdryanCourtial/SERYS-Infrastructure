@@ -29,3 +29,10 @@ ansible-playbook \
   -i inventory/production.ini \
   playbooks/setup-serys.yml
 ```
+
+**Comande ANSIBLE VAULT**
+ansible-vault create fichier	*Créer un fichier chiffré*
+ansible-vault edit fichier	*Modifier un fichier chiffré*
+ansible-vault view fichier	*Lire son contenu déchiffré*
+ansible-vault rekey fichier	*Changer son mot de passe*
+ansible-vault encrypt fichier	*Chiffrer un fichier existant*

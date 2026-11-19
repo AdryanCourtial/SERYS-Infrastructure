@@ -1,1 +1,8 @@
 .env
+
+/secrets/*
+!/secrets/.gitkeep
+
+# Ne jamais versionner un mot de passe Vault
+*.vault-pass
+.vault_password

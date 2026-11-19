@@ -15,3 +15,6 @@
 - name: Afficher la revision deployee
   ansible.builtin.debug:
     msg: "Infrastructure Git : {{ infra_git.after }}"
+
+- name: Provisionner les secrets SERYS
+  ansible.builtin.import_tasks: secrets.yml
