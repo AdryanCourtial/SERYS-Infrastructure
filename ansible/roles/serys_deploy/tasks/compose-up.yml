@@ -1,0 +1,27 @@
+- name: Verifier la presence du Docker Compose
+  ansible.builtin.stat:
+    path: /opt/serys/infra/docker-compose-server.yml
+  register: compose_file
+
+- name: Arreter si le Docker Compose est absent
+  ansible.builtin.assert:
+    that:
+      - compose_file.stat.exists
+    fail_msg: "Le fichier Docker Compose SERYS est introuvable."
+
+- name: Demarrer les conteneurs SERYS
+  community.docker.docker_compose_v2:
+    project_src: /opt/serys/infra
+    files:
+      - docker-compose-server.yml
+    project_name: infra
+    state: present
+    pull: always
+    wait: true
+    wait_timeout: 120
+    remove_orphans: false
+  register: compose_result
+
+- name: Afficher le resultat du deploiement
+  ansible.builtin.debug:
+    msg: "Docker Compose SERYS : changed={{ compose_result.changed }}"

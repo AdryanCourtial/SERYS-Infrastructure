@@ -18,3 +18,6 @@
 
 - name: Provisionner les secrets SERYS
   ansible.builtin.import_tasks: secrets.yml
+
+- name: Lancement du Docker Compose pour SERYS
+  ansible.builtin.import_tasks: compose-up.yml

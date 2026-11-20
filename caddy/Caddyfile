@@ -1,0 +1,9 @@
+full-stack-bourse.fr {
+    encode zstd gzip
+    reverse_proxy serys-frontend:3000
+}
+
+api.full-stack-bourse.fr {
+    encode zstd gzip
+    reverse_proxy serys-backend:5555
+}
