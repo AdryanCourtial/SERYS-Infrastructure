@@ -30,6 +30,11 @@ ansible-playbook \
   playbooks/setup-serys.yml
 ```
 
+*Lancer le playbook pour la mise en place de l'application*
+```
+ansible-playbook   -i inventory/production.ini   playbooks/deploy-serys.yml   --ask-vault-pass
+```
+
 **Comande ANSIBLE VAULT**
 ansible-vault create fichier	*Créer un fichier chiffré*
 ansible-vault edit fichier	*Modifier un fichier chiffré*
